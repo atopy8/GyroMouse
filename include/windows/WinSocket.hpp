@@ -5,16 +5,16 @@
 #include <memory>
 
 #include "interface/ISocket.hpp"
-#include "windows/WinNetworkContext.hpp"
+#include "interface/INetworkContext.hpp"
 
 class WinSocket : public ISocket {
     private:
         SOCKET allocatedSocket = INVALID_SOCKET;
         sockaddr_in localService = {};
-        std::shared_ptr<WinNetworkContext> networkContext;
+        std::shared_ptr<INetworkContext> networkContext;
 
     public:
-        WinSocket(std::shared_ptr<WinNetworkContext> context);
+        WinSocket(std::shared_ptr<INetworkContext> context);
 
         // no copy
         WinSocket(const WinSocket &) = delete;

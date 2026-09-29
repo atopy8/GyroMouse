@@ -4,7 +4,7 @@
 #include <iostream>
 #include <format>
 
-WinSocket::WinSocket(std::shared_ptr<WinNetworkContext> context) {    
+WinSocket::WinSocket(std::shared_ptr<INetworkContext> context) {    
     allocatedSocket = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if (allocatedSocket == INVALID_SOCKET){
         throw std::runtime_error(std::format("Socket function failed with error {}", WSAGetLastError()));
