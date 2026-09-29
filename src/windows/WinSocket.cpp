@@ -4,7 +4,7 @@
 #include <iostream>
 #include <format>
 
-WinSocket::WinSocket(std::shared_ptr<INetworkContext> context) {    
+WinSocket::WinSocket(std::shared_ptr<INetworkContext> context) : networkContext(context) {    
     allocatedSocket = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if (allocatedSocket == INVALID_SOCKET){
         throw std::runtime_error(std::format("Socket function failed with error {}", WSAGetLastError()));
@@ -12,7 +12,6 @@ WinSocket::WinSocket(std::shared_ptr<INetworkContext> context) {
 
     localService.sin_family = AF_INET;
     localService.sin_addr.s_addr = INADDR_ANY;
-    networkContext = context;
 }
 
 

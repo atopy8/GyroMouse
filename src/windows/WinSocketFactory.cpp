@@ -3,8 +3,7 @@
 
 #include <memory>
 
-WinSocketFactory::WinSocketFactory() {
-    networkContext = std::make_shared<WinNetworkContext>();
+WinSocketFactory::WinSocketFactory() : networkContext(std::make_shared<WinNetworkContext>()) {
 }
 
 std::unique_ptr<ISocket> WinSocketFactory::createSocket(){
