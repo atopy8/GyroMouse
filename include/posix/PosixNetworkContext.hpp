@@ -3,6 +3,7 @@
 #include "interface/INetworkContext.hpp"
 
 class PosixNetworkContext : public INetworkContext {
-    PosixNetworkContext();
-    ~PosixNetworkContext();
+    public:
+        PosixNetworkContext();
+        ~PosixNetworkContext();
 };
