@@ -1,29 +1,27 @@
-#include "../include/WinSocket.hpp"
+#include "windows/WinSocket.hpp"
 
 #include <stdexcept>
 #include <iostream>
 #include <format>
 
-WinSocket::WinSocket() {
-    int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (err != 0) {
-        throw std::runtime_error(std::format("Failed to execute WSAStartup with error {}", err));
-    }
-    
+WinSocket::WinSocket(std::shared_ptr<WinNetworkContext> context) {    
     allocatedSocket = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if (allocatedSocket == INVALID_SOCKET){
         throw std::runtime_error(std::format("Socket function failed with error {}", WSAGetLastError()));
     }
 
-    service.sin_family = AF_INET;
-    service.sin_addr.s_addr = INADDR_ANY;
+    localService.sin_family = AF_INET;
+    localService.sin_addr.s_addr = INADDR_ANY;
+    networkContext = context;
 }
 
 
 // to steal
 WinSocket::WinSocket(WinSocket &&other) noexcept {
     allocatedSocket = other.allocatedSocket;
+    localService = other.localService;
     other.allocatedSocket = INVALID_SOCKET;
+    networkContext = std::move(other.networkContext);
 }
 
 WinSocket &WinSocket::operator=(WinSocket &&other) noexcept {
@@ -37,25 +35,30 @@ WinSocket &WinSocket::operator=(WinSocket &&other) noexcept {
         }
     }
     allocatedSocket = other.allocatedSocket;
+    localService = other.localService;
     other.allocatedSocket = INVALID_SOCKET;
+    networkContext = std::move(other.networkContext);
     return *this;
-}; 
+}
 
 void WinSocket::bindPort(const std::uint16_t port){
-    service.sin_port = htons(port);
-    int result = bind(allocatedSocket, (SOCKADDR *)&service, sizeof(service));
+    localService.sin_port = htons(port);
+    
+    int result = bind(allocatedSocket, reinterpret_cast<SOCKADDR *>(&localService), sizeof(localService));
     if (result != 0) {
         throw std::runtime_error(std::format("bind function failed with error {}", WSAGetLastError()));
     }
-};
+}
 
 std::size_t WinSocket::receive(std::span<std::uint8_t> buffer){
-    int serviceSize = (int)sizeof(service);
-    int result = recvfrom(allocatedSocket, reinterpret_cast<char *>(buffer.data()), static_cast<int>(buffer.size()), 0, (SOCKADDR *)&service, &serviceSize);
+    sockaddr_in clientService = {};
+    int clientServiceSize = static_cast<int>(sizeof(clientService));
+    
+    int result = recvfrom(allocatedSocket, reinterpret_cast<char *>(buffer.data()), static_cast<int>(buffer.size()), 0, reinterpret_cast<SOCKADDR *>(&clientService), &clientServiceSize);
     if (result == SOCKET_ERROR) {
         throw std::runtime_error(std::format("recvfrom function failed with error {}", WSAGetLastError()));
     }
-    return result;
+    return static_cast<std::size_t>(result);
 }        
 
 WinSocket::~WinSocket(){
@@ -64,6 +67,5 @@ WinSocket::~WinSocket(){
         if (result == SOCKET_ERROR) {
             std::cerr << "closesocket function failed with error " << WSAGetLastError();
         }
-        WSACleanup();
     }
-};
+}

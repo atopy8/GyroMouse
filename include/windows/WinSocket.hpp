@@ -1,20 +1,20 @@
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
-
+ 
 #include <WinSock2.h>
+#include <memory>
 
-#include "ISocket.hpp"
+#include "interface/ISocket.hpp"
+#include "windows/WinNetworkContext.hpp"
 
 class WinSocket : public ISocket {
-
     private:
         SOCKET allocatedSocket = INVALID_SOCKET;
-        WSADATA wsaData;
-        sockaddr_in service = {};
+        sockaddr_in localService = {};
+        std::shared_ptr<WinNetworkContext> networkContext;
 
     public:
-        WinSocket();
+        WinSocket(std::shared_ptr<WinNetworkContext> context);
 
         // no copy
         WinSocket(const WinSocket &) = delete;
@@ -28,5 +28,5 @@ class WinSocket : public ISocket {
 
         std::size_t receive(std::span<std::uint8_t> buffer) override;
 
-        ~WinSocket();
+        ~WinSocket() override;
 };
