@@ -8,10 +8,11 @@
 #include "Utils.hpp"
 #include "ReceiveSocket.hpp"
 
-#define MAX_CONSECUTIVE_ERRORS 50
+// threshold for maximum number of consecutive network errors we accept. 
+constexpr int MAX_CONSECUTIVE_ERRORS = 50;
 
 int main(const int argc,const char* argv[]) {
-    const std::uint16_t port = parse_port(argc, argv);
+    const std::uint16_t port = parsePort(argc, argv);
     if (port == 0){
         std::cerr << "Error parsing the port, usage : " << argv[0] << " <port(optionnal)>\n";
         return 1;
@@ -29,6 +30,7 @@ int main(const int argc,const char* argv[]) {
         return 1;
     }
 
+    // temp callback, printing the received packets into cout
     std::function<void(std::span <const std::uint8_t>)> callbackFunction = [](std::span<const std::uint8_t> buffer){
         for (std::uint8_t byte : buffer)
         {

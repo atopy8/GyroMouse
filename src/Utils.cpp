@@ -2,7 +2,7 @@
 
 #include "Utils.hpp"
 
-std::uint16_t parse_port(const int argc,const char* argv[]){
+std::uint16_t parsePort(const int argc,const char* argv[]){
     //parse port, by default returns 5000, if error return 0, port should be in [1:65535]
     if (argc == 1)
         return 5000;

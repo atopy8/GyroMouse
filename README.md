@@ -24,7 +24,7 @@ One of these directories will be compiled, and the choice is being made with cma
 ### Windows
 
 #### WinNetworkContext:
-*The ownership of the consext is shared between the factory and the sockets, so we are sure the context isn't closed before any of the sockets*
+*The ownership of the context is shared between the factory and the sockets, so we are sure the context isn't closed before any of the sockets*
 
 ### ReceiveSocket:
 *Function used to handle the receptions of a socket. Can handle a maximum of consecutive network errors (std::runtime_error) before returning 1(network error), or if the error comes from parsing and treatment, we catch CallbackError and return 2*
@@ -32,7 +32,7 @@ One of these directories will be compiled, and the choice is being made with cma
 
 ### Tests
 
-A testing infrastructure has been put in place so the project is industry ready. It utilize google test/ mock.
+A testing infrastructure has been put in place and it utilize google test/ mock.
 
 ## Futures evolutions
 

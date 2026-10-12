@@ -23,6 +23,7 @@ WinSocket::WinSocket(WinSocket &&other) noexcept {
     networkContext = std::move(other.networkContext);
 }
 
+// affectation with rvalue
 WinSocket &WinSocket::operator=(WinSocket &&other) noexcept {
     if (this == &other)
         return *this;
@@ -51,12 +52,13 @@ void WinSocket::bindPort(const std::uint16_t port){
 
 std::size_t WinSocket::receive(std::span<std::uint8_t> buffer){
     sockaddr_in clientService = {};
-    int clientServiceSize = static_cast<int>(sizeof(clientService));
+    int clientServiceSize = static_cast<int>(sizeof(clientService)); // information of the sender
     
     int result = recvfrom(allocatedSocket, reinterpret_cast<char *>(buffer.data()), static_cast<int>(buffer.size()), 0, reinterpret_cast<SOCKADDR *>(&clientService), &clientServiceSize);
     if (result == SOCKET_ERROR) {
         throw std::runtime_error(std::format("recvfrom function failed with error {}", WSAGetLastError()));
     }
+    // a returning 0 is valid, receiving empty won't raise an error, we receive in udp.
     return static_cast<std::size_t>(result);
 }        
 
