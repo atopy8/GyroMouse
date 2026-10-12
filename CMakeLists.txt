@@ -67,5 +67,17 @@ if(BUILD_TESTS)
     gtest_discover_tests(testSocketInterface)
     gtest_discover_tests(testUtils)
 
+    if(WIN32)
+        add_executable(testWinSocketMove
+            tests/integration/testWinSocketMove.cpp
+            src/windows/WinSocket.cpp
+            src/windows/WinNetworkContext.cpp)
+        target_include_directories(testWinSocketMove PRIVATE include)
+        target_compile_definitions(testWinSocketMove PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+        target_link_libraries(testWinSocketMove PRIVATE GTest::gtest_main ws2_32)
+        gtest_discover_tests(testWinSocketMove)
+    endif()
+
 endif()
+
 
