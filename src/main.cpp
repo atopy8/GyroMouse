@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <format>
 
 #include "SocketFactoryProvider.hpp"
 #include "Utils.hpp"
@@ -31,10 +32,12 @@ int main(const int argc,const char* argv[]) {
     }
 
     // temp callback, printing the received packets into cout
-    std::function<void(std::span <const std::uint8_t>)> callbackFunction = [](std::span<const std::uint8_t> buffer){
+    std::function<void(std::span<const std::uint8_t>)> callbackFunction = [](std::span<const std::uint8_t> buffer)
+    {
+        std::cout << buffer.size() << "\n";
         for (std::uint8_t byte : buffer)
         {
-            std::cout << byte;
+            std::cout << std::format("{}", static_cast<char>(byte));
         }
     };
     return receiveSocket(*socket, MAX_CONSECUTIVE_ERRORS, callbackFunction);
