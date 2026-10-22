@@ -62,10 +62,14 @@ if(BUILD_TESTS)
     target_include_directories(testUtils PRIVATE include)
     target_link_libraries(testUtils PRIVATE GTest::gtest_main)
 
+    add_executable(testParsing tests/parsing/testParsing.cpp src/parsing/GyroParser.cpp)
+    target_include_directories(testParsing PRIVATE include)
+    target_link_libraries(testParsing PRIVATE GTest::gtest_main)
 
 
     gtest_discover_tests(testSocketInterface)
     gtest_discover_tests(testUtils)
+    gtest_discover_tests(testParsing)
 
     if(WIN32)
         add_executable(testWinSocketMove
